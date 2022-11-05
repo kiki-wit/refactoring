@@ -1,6 +1,40 @@
 import INVOICE from "../invoices.json";
 import PLAYS from "../play.json";
 
+function playFor(aPerformance) {
+  return PLAYS[aPerformance.playID];
+}
+
+function amountFor(aPerformance, play){
+  /*
+  자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
+  매개변수 이름에 접두어로 타입 이름을 적고 역할이 뚜렷하지 않을 때는
+  부정 관사 (a/an)를 붙인다.
+  Smalltalk Best Practice Patterns 참고
+  */
+  let result = 0;
+  switch (play.type) {
+    case "tragedy": //비극
+    result = 40000;
+      if (aPerformance.audience > 30){
+        result += 1000 * (aPerformance.audience - 30);
+      } 
+      break;
+
+    case "comedy": //희극
+    result = 30000;
+      if (aPerformance.audience > 20){
+        result += 1000 + 500 * (aPerformance.audience - 20);
+      }
+      result += 300 * aPerformance.audience;
+      break;
+      
+    default:
+      throw new Error(`알 수 없는 장르: ${play.type}`);
+  }
+  return result;
+}
+
 function statement(invoice, plays) {
   let totalAmount = 0;
   let volumeCredits = 0;
@@ -11,38 +45,12 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2
   }).format;
 
-  function amountFor(aPerformance, play){
-    /*
-    자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
-    매개변수 이름에 접두어로 타입 이름을 적고 역할이 뚜렷하지 않을 때는
-    부정 관사 (a/an)를 붙인다.
-    Smalltalk Best Practice Patterns 참고
-    */
-    let result = 0;
-    switch (play.type) {
-      case "tragedy": //비극
-      result = 40000;
-        if (aPerformance.audience > 30){
-          result += 1000 * (aPerformance.audience - 30);
-        } 
-        break;
-
-      case "comedy": //희극
-      result = 30000;
-        if (aPerformance.audience > 20){
-          result += 1000 + 500 * (aPerformance.audience - 20);
-        }
-        result += 300 * aPerformance.audience;
-        break;
-        
-      default:
-        throw new Error(`알 수 없는 장르: ${play.type}`);
-    }
-    return result;
-  }
-
   for (let perf of invoice.performances) {
-    const play = plays[perf.playID]; // object {name, type}
+    /*
+    임시 변수를 질의 함수로 변경하고
+    변수 인라인하기
+    */
+    const play = playFor(perf); // object {name, type}
     let thisAmount = amountFor(perf, play);
     // 포인트를 적립한다.
     volumeCredits += Math.max(perf.audience - 30, 0);
