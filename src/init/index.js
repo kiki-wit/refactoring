@@ -11,22 +11,28 @@ function statement(invoice, plays) {
     minimumFractionDigits: 2
   }).format;
 
-  function amountFor(perf, play){
+  function amountFor(aPerformance, play){
+    /*
+    자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
+    매개변수 이름에 접두어로 타입 이름을 적고 역할이 뚜렷하지 않을 때는
+    부정 관사 (a/an)를 붙인다.
+    Smalltalk Best Practice Patterns 참고
+    */
     let result = 0;
     switch (play.type) {
       case "tragedy": //비극
       result = 40000;
-        if (perf.audience > 30){
-          result += 1000 * (perf.audience - 30);
+        if (aPerformance.audience > 30){
+          result += 1000 * (aPerformance.audience - 30);
         } 
         break;
 
       case "comedy": //희극
       result = 30000;
-        if (perf.audience > 20){
-          result += 1000 + 500 * (perf.audience - 20);
+        if (aPerformance.audience > 20){
+          result += 1000 + 500 * (aPerformance.audience - 20);
         }
-        result += 300 * perf.audience;
+        result += 300 * aPerformance.audience;
         break;
         
       default:
