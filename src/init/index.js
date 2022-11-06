@@ -5,6 +5,14 @@ function playFor(aPerformance) {
   return PLAYS[aPerformance.playID];
 }
 
+function volumeCreditsFor(aPerformance) {
+  let result = 0;
+  result += Math.max(aPerformance.audience -30, 0);
+  if ("comedy" === playFor(aPerformance).type)
+  result += Math.floor(aPerformance.audience / 5);
+  return result;
+}
+
 function amountFor(aPerformance){
   /*
   자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
@@ -46,16 +54,7 @@ function statement(invoice) {
   }).format;
 
   for (let perf of invoice.performances) {
-    /*
-    totalAmount의 값이 변하지 않으므로 변수 인라인하기를 적용한다.
-    play변수를 제거함으로써 로컬 유효범위의 변수가 하나 줄어서 
-    포인트 계산 부분을 추출하기가 쉬워졌다.
-    */
-    // 포인트를 적립한다.
-    volumeCredits += Math.max(perf.audience - 30, 0);
-    // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ("comedy" === playFor(perf).type) 
-    volumeCredits += Math.floor(perf.audience / 5);
+    volumeCredits += volumeCreditsFor(perf);
 
     // 청구 내역을 출력한다.
     result += `${playFor(perf).name}: ${format(amountFor(perf) / 100)} (${
