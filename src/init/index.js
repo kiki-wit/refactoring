@@ -13,6 +13,14 @@ function volumeCreditsFor(aPerformance) {
   return result;
 }
 
+function format(aNumber){
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2
+  }).format(aNumber);
+}
+
 function amountFor(aPerformance){
   /*
   자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
@@ -42,16 +50,11 @@ function amountFor(aPerformance){
   }
   return result;
 }
-
+// format과 같이 함수 변수를 일반 함수로 변경하는 것도 리팩토링에 해당된다.
 function statement(invoice) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `청구 내역(고객명: ${invoice.customer})\n`;
-  const format = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2
-  }).format;
 
   for (let perf of invoice.performances) {
     volumeCredits += volumeCreditsFor(perf);
