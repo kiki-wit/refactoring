@@ -5,7 +5,7 @@ function playFor(aPerformance) {
   return PLAYS[aPerformance.playID];
 }
 
-function amountFor(aPerformance, play){
+function amountFor(aPerformance){
   /*
   자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
   매개변수 이름에 접두어로 타입 이름을 적고 역할이 뚜렷하지 않을 때는
@@ -13,7 +13,7 @@ function amountFor(aPerformance, play){
   Smalltalk Best Practice Patterns 참고
   */
   let result = 0;
-  switch (play.type) {
+  switch (playFor(aPerformance).type) {
     case "tragedy": //비극
     result = 40000;
       if (aPerformance.audience > 30){
@@ -30,12 +30,12 @@ function amountFor(aPerformance, play){
       break;
       
     default:
-      throw new Error(`알 수 없는 장르: ${play.type}`);
+      throw new Error(`알 수 없는 장르: ${playFor(aPerformance).type}`);
   }
   return result;
 }
 
-function statement(invoice, plays) {
+function statement(invoice) {
   let totalAmount = 0;
   let volumeCredits = 0;
   let result = `청구 내역(고객명: ${invoice.customer})\n`;
@@ -46,19 +46,14 @@ function statement(invoice, plays) {
   }).format;
 
   for (let perf of invoice.performances) {
-    /*
-    임시 변수를 질의 함수로 변경하고
-    변수 인라인하기
-    */
-    const play = playFor(perf); // object {name, type}
-    let thisAmount = amountFor(perf, play);
+    let thisAmount = amountFor(perf);
     // 포인트를 적립한다.
     volumeCredits += Math.max(perf.audience - 30, 0);
     // 희극 관객 5명마다 추가 포인트를 제공한다.
-    if ("comedy" === play.type) volumeCredits += Math.floor(perf.audience / 5);
+    if ("comedy" === playFor(perf).type) volumeCredits += Math.floor(perf.audience / 5);
 
     // 청구 내역을 출력한다.
-    result += `${play.name}: ${format(thisAmount / 100)} (${
+    result += `${playFor(perf).name}: ${format(thisAmount / 100)} (${
       perf.audience
     }석)\n`;
     totalAmount += thisAmount;
@@ -68,4 +63,4 @@ function statement(invoice, plays) {
   return result;
 }
 
-console.log(statement(INVOICE[0], PLAYS));
+console.log(statement(INVOICE[0]));
