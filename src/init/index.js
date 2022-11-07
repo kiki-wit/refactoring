@@ -12,13 +12,26 @@ function volumeCreditsFor(aPerformance) {
   result += Math.floor(aPerformance.audience / 5);
   return result;
 }
-
+/*
+format은 함수가 하는 일을 충분히 설명해주지 못한다.
+formatAsUSD는 너무 장황하므로 함수의 핵심인 화폐 단위 맞추기를 생각해서
+usd라고 이름짓는다.
+함수를 쪼개는 리팩터링은 이름을 잘 지어야만 효과가 있다.
+*/
 function usd(aNumber){
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2
   }).format(aNumber/100);
+}
+
+function totalVolumeCredits(invoice){
+  let volumeCredits = 0;
+  for (let perf of invoice.performances){
+    volumeCredits += volumeCreditsFor(perf);
+  }
+  return volumeCredits;
 }
 
 function amountFor(aPerformance){
@@ -50,10 +63,10 @@ function amountFor(aPerformance){
   }
   return result;
 }
+
 // format과 같이 함수 변수를 일반 함수로 변경하는 것도 리팩토링에 해당된다.
 function statement(invoice) {
   let totalAmount = 0;
-  let volumeCredits = 0;
   let result = `청구 내역(고객명: ${invoice.customer})\n`;
 
   for (let perf of invoice.performances) {
@@ -61,12 +74,12 @@ function statement(invoice) {
 
     // 청구 내역을 출력한다.
     result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${
-      perf.audience
-    }석)\n`;
+      perf.audience}석)\n`;
     totalAmount += amountFor(perf);
   }
+  let volumeCredits = totalVolumeCredits(invoice);
   result += `총액: ${usd(totalAmount)}\n`;
-  result += `적립 포인트: ${volumeCredits}점\n`;
+  result += `적립 포인트: ${totalVolumeCredits(invoice)}점\n`;
   return result;
 }
 
