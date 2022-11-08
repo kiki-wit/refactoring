@@ -64,12 +64,12 @@ function amountFor(aPerformance){
   return result;
 }
 
-function appleSauce(invoice){
-  let totalAmount = 0;
+function totalAmount(invoice){
+  let result = 0;
   for (let perf of invoice.performances){
-    totalAmount += amountFor(perf);
+    result += amountFor(perf);
   }
-  return totalAmount;
+  return result;
 }
 
 // format과 같이 함수 변수를 일반 함수로 변경하는 것도 리팩토링에 해당된다.
@@ -80,9 +80,8 @@ function statement(invoice) {
     result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${
       perf.audience}석)\n`;
   }
-  let totalAmount = appleSauce(invoice);
   
-  result += `총액: ${usd(totalAmount)}\n`;
+  result += `총액: ${usd(totalAmount(invoice))}\n`;
   result += `적립 포인트: ${totalVolumeCredits(invoice)}점\n`;
   return result;
 }
