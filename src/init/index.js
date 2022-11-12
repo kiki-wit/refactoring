@@ -2,7 +2,14 @@ import INVOICE from "../invoices.json";
 import PLAYS from "../play.json";
 
 // format과 같이 함수 변수를 일반 함수로 변경하는 것도 리팩토링에 해당된다.
-function statement(invoice) {
+function statement(invoice, plays) {
+  const statementDate = {};
+  return renderPlainText(statementDate, invoice, plays);
+}
+
+function renderPlainText(data, invoice, plays){
+  // invoice와 plays와 같은 인수들을 중간 데이터 구조로 옮기면
+  // 단계를 줄일 수 있다.
   let result = `청구 내역(고객명: ${invoice.customer})\n`;
   for (let perf of invoice.performances) {
     // 청구 내역을 출력한다.
@@ -88,4 +95,4 @@ function statement(invoice) {
   
 }
 
-console.log(statement(INVOICE[0]));
+console.log(statement(INVOICE[0], PLAYS));
