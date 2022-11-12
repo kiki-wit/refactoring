@@ -6,7 +6,11 @@ function statement(invoice, plays) {
   const statementData = {};
   statementData.customer = invoice.customer;
   statementData.performances = invoice.performances.map(enrichPerformance);
+  // 총합
+  statementData.totalAmount = totalAmount(statementData);
+  statementData.totalVolumeCredits = totalVolumeCredits(statementData);
   return renderPlainText(statementData, invoice, plays);
+
 
   function enrichPerformance(aPerformance){
     // 얕은 복사 수행
@@ -16,6 +20,9 @@ function statement(invoice, plays) {
     */
     const result = Object.assign({}, aPerformance);
     result.play = playFor(result);
+    result.amount = amountFor(result);
+    // 적립 포인트 계산 함수 옮김
+    result.volumCredits = volumeCreditsFor(result);
     return result;
   }
 
@@ -24,60 +31,6 @@ function statement(invoice, plays) {
     return plays[aPerformance.playID];
   }
 
-}
-
-function renderPlainText(data, plays){
-  // invoice와 plays와 같은 인수들을 중간 데이터 구조로 옮기면
-  // 단계를 줄일 수 있다.
-  let result = `청구 내역(고객명: ${data.customer})\n`;
-  for (let perf of data.performances) {
-    // 청구 내역을 출력한다.
-    result += `${perf.play.name}: ${usd(amountFor(perf))} (${
-      perf.audience}석)\n`;
-  }
-  result += `총액: ${usd(totalAmount())}\n`;
-  result += `적립 포인트: ${totalVolumeCredits()}점\n`;
-  return result;
-
-  function totalAmount(){
-    let result = 0;
-    for (let perf of data.performances){
-      result += amountFor(perf);
-    }
-    return result;
-  }
-
-  // 여기서부터 중첩 함수 시작
-  function totalVolumeCredits(){
-    let result = 0;
-    for (let perf of data.performances){
-      result += volumeCreditsFor(perf);
-    }
-    return result;
-  }
-
-  /*
-  format은 함수가 하는 일을 충분히 설명해주지 못한다.
-  formatAsUSD는 너무 장황하므로 함수의 핵심인 화폐 단위 맞추기를 생각해서
-  usd라고 이름짓는다.
-  함수를 쪼개는 리팩터링은 이름을 잘 지어야만 효과가 있다.
-  */
-  function usd(aNumber){
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2
-    }).format(aNumber/100);
-  }
-
-  function volumeCreditsFor(aPerformance) {
-    let result = 0;
-    result += Math.max(aPerformance.audience -30, 0);
-    if ("comedy" === aPerformance.play.type)
-    result += Math.floor(aPerformance.audience / 5);
-    return result;
-  }
-  
   function amountFor(aPerformance){
     /*
     자바스크립트와 같은 동적 타입 언어는 타입이 드러나게 작성한다.
@@ -106,7 +59,61 @@ function renderPlainText(data, plays){
         throw new Error(`알 수 없는 장르: ${aPerformance.play.type}`);
     }
     return result;
-  } 
+  }
+
+  function volumeCreditsFor(aPerformance) {
+    let result = 0;
+    result += Math.max(aPerformance.audience -30, 0);
+    if ("comedy" === aPerformance.play.type)
+    result += Math.floor(aPerformance.audience / 5);
+    return result;
+  }
+
+  // <-- 총합 시작 
+  function totalAmount(data){
+    let result = 0;
+    for (let perf of data.performances){
+      result += perf.amount;
+    }
+    return result;
+  }
+
+  function totalVolumeCredits(data){
+    let result = 0;
+    for (let perf of data.performances){
+      result += perf.volumCredits;
+    }
+    return result;
+  }
+  // 총합 끝 --> 
+}
+
+function renderPlainText(data, plays){
+  // invoice와 plays와 같은 인수들을 중간 데이터 구조로 옮기면
+  // 단계를 줄일 수 있다.
+  let result = `청구 내역(고객명: ${data.customer})\n`;
+  for (let perf of data.performances) {
+    // 청구 내역을 출력한다.
+    result += `${perf.play.name}: ${usd(perf.amount)} (${
+      perf.audience}석)\n`;
+  }
+  result += `총액: ${usd(data.totalAmount)}\n`;
+  result += `적립 포인트: ${data.totalVolumeCredits}점\n`;
+  return result;
+
+  /*
+  format은 함수가 하는 일을 충분히 설명해주지 못한다.
+  formatAsUSD는 너무 장황하므로 함수의 핵심인 화폐 단위 맞추기를 생각해서
+  usd라고 이름짓는다.
+  함수를 쪼개는 리팩터링은 이름을 잘 지어야만 효과가 있다.
+  */
+  function usd(aNumber){
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2
+    }).format(aNumber/100);
+  }
   
 }
 
