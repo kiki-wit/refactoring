@@ -3,38 +3,57 @@ import PLAYS from "../play.json";
 
 // format과 같이 함수 변수를 일반 함수로 변경하는 것도 리팩토링에 해당된다.
 function statement(invoice, plays) {
-  const statementDate = {};
-  return renderPlainText(statementDate, invoice, plays);
+  const statementData = {};
+  statementData.customer = invoice.customer;
+  statementData.performances = invoice.performances.map(enrichPerformance);
+  return renderPlainText(statementData, invoice, plays);
+
+  function enrichPerformance(aPerformance){
+    // 얕은 복사 수행
+    /**
+     * 가변 데이터는 금방 상하기(?) 때문에 불변으로 만들기 위해 
+     * 얕은 복사를 수행해서 데이터를 채운다.
+    */
+    const result = Object.assign({}, aPerformance);
+    result.play = playFor(result);
+    return result;
+  }
+
+  // renderPlainText 의 중첩함수였던 playFor을 statement로 옮긴다.
+  function playFor(aPerformance) {
+    return plays[aPerformance.playID];
+  }
+
 }
 
-function renderPlainText(data, invoice, plays){
+function renderPlainText(data, plays){
   // invoice와 plays와 같은 인수들을 중간 데이터 구조로 옮기면
   // 단계를 줄일 수 있다.
-  let result = `청구 내역(고객명: ${invoice.customer})\n`;
-  for (let perf of invoice.performances) {
+  let result = `청구 내역(고객명: ${data.customer})\n`;
+  for (let perf of data.performances) {
     // 청구 내역을 출력한다.
-    result += `${playFor(perf).name}: ${usd(amountFor(perf))} (${
+    result += `${perf.play.name}: ${usd(amountFor(perf))} (${
       perf.audience}석)\n`;
   }
-  
   result += `총액: ${usd(totalAmount())}\n`;
   result += `적립 포인트: ${totalVolumeCredits()}점\n`;
   return result;
 
   function totalAmount(){
     let result = 0;
-    for (let perf of invoice.performances){
+    for (let perf of data.performances){
       result += amountFor(perf);
     }
     return result;
   }
+
   // 여기서부터 중첩 함수 시작
   function totalVolumeCredits(){
-    let volumeCredits = 0;
-    for (let perf of invoice.performances){
-      volumeCredits += volumeCreditsFor(perf);
+    let result = 0;
+    for (let perf of data.performances){
+      result += volumeCreditsFor(perf);
     }
-    return volumeCredits;
+    return result;
   }
 
   /*
@@ -54,13 +73,9 @@ function renderPlainText(data, invoice, plays){
   function volumeCreditsFor(aPerformance) {
     let result = 0;
     result += Math.max(aPerformance.audience -30, 0);
-    if ("comedy" === playFor(aPerformance).type)
+    if ("comedy" === aPerformance.play.type)
     result += Math.floor(aPerformance.audience / 5);
     return result;
-  }
-  
-  function playFor(aPerformance) {
-    return PLAYS[aPerformance.playID];
   }
   
   function amountFor(aPerformance){
@@ -71,7 +86,7 @@ function renderPlainText(data, invoice, plays){
     Smalltalk Best Practice Patterns 참고
     */
     let result = 0;
-    switch (playFor(aPerformance).type) {
+    switch (aPerformance.play.type) {
       case "tragedy": //비극
       result = 40000;
         if (aPerformance.audience > 30){
@@ -88,7 +103,7 @@ function renderPlainText(data, invoice, plays){
         break;
         
       default:
-        throw new Error(`알 수 없는 장르: ${playFor(aPerformance).type}`);
+        throw new Error(`알 수 없는 장르: ${aPerformance.play.type}`);
     }
     return result;
   } 
