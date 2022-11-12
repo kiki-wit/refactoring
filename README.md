@@ -3,8 +3,11 @@
 
 ### Setting
 * yarn 
+```
+brew install yarn
+```
 * parcel 
-
+s
 ### Installation
 ```
 yarn parcel index.html
