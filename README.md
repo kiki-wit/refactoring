@@ -3,11 +3,17 @@
 
 ### Setting
 * yarn 
+
 ```
 brew install yarn
 ```
+
 * parcel 
-s
+  
+```
+yarn global add parcel-bundler
+```
+
 ### Installation
 ```
 yarn parcel index.html
