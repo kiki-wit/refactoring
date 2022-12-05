@@ -36,6 +36,37 @@ class Province {
     get price() { return this._price; }
     set price(arg) { this._price = parseInt(arg); } // 숫자로 파싱해서 저장
 
+    // 생산 부족분 계산
+    get shortfail() {
+        return this._demand - this.totalProduction;
+    }
+
+    // 수익 계산
+    get profit() {
+        return this.demandValue - this.demandCost;
+    }
+
+    get demandValue() {
+        return this.satisfiedDemand * this.price;
+    }
+
+    get satisfiedDemand() {
+        return Math.min(this._demand, this.totalProduction);
+    }
+
+    get demandCost() {
+        let remainingDemand = this.demand;
+        let result = 0;
+        this.producers
+            .sort((a,b) => a.cost - b.cost)
+            .forEach(p => {
+                const contribution = Math.min(remainingDemand, p.production);
+                remainingDemand -= contribution;
+                result += contribution * p.cost;
+            });
+            return result;
+    }
+
 }
 
 
