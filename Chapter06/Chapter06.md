@@ -374,6 +374,7 @@ public static void main(String[] args){
    }
 }
 
+// 단계를 쪼갤 준비
 static long run(String[] args) throw IOException {
    if (args.length == 0) throw new RuntimeException("파일명을 입력하세요.");
    String filename = args[args.length - 1];
