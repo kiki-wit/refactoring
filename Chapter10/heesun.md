@@ -117,6 +117,91 @@ function payAmount(employee) {
 // 2. 위 과정을 반복하기
 ```
 
+### 10.4 조건부 로직을 다형성으로 바꾸기
+Replace Conditional with Polymorphism
+
+```javascript
+swich (bird.type) {
+  case '유럽 제비':
+  return "보통이다";
+  case '아프리카 제비';
+  return (bird.numberOfCoconuts > 2) ? "지쳤다" : "보통이다";
+  case '노르웨이 파랑 앵무';
+  return (bird.voltage > 100) ? "그을렸다" : "예쁘다";
+  default:
+  return "알 수 없다";
+}
+⬇
+class EuropeanSwallow {
+  get plumage(){
+    return "보통이다";
+  }
+}
+
+class AfricanSwallow {
+  get plumage(){
+    return (this.numberOfCoconuts > 2) ? "지쳤다" : "보통이다";
+  }
+}
+
+class NorwegianBlueParrot {
+  get plumage(){
+    return (this.voltage > 100) ? "그을렸다" : "예쁘다";
+  }
+}
+```
+
+### 10.5 특이 케이스 추가하기
+Introduce Special Case
+
+```javascript
+// before
+if (aCustomer === "미확인 고객") customerName = "거주자";
+
+// after
+class UnknownCustomer {
+  get name() { return "거주자";}
+```
+
+### 10.6 어서션 추가하기
+Introduce Assertion
+
+```javascript
+// before
+if (this.discountRate)
+  base = base - (this.discountRate * base);
+
+// after
+assert(this.discountRate >= 0);
+if (this.discountRate)
+  base = base - (this.discountRate * base);
+```
+
+### 10.7 제어 플래그를 탈출문으로 바꾸기
+Replace Control Flag with Break
+
+```javascript
+// before
+for (const p of people) {
+  if (!found) {
+    if (p === "조커") {
+      sendAlert();
+      found = true;
+    }
+...
+
+// after
+for (const p of people) {
+  if (p === "조커") {
+    sendAlert();
+    break;
+    }
+...
+```
+
+### 
+
+
 
 
 
