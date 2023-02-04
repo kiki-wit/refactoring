@@ -178,6 +178,95 @@ class NorwegianBlueParrot {
 }
 ```
 
+* 절차
+1. 다형적 동작을 표현하는 클래스들이 아직 없다면 만들어준다. 이왕이면 적합한 인스턴스를 알아서 만들어 반환하는
+팩터리 함수도 함께 만든다.
+2. 호출하는 코드에서 팩터리 함수를 사용하게 한다.
+3. 조건부 로직 함수를 슈퍼 클래스로 옮긴다. -> 조건부 로직이 온전한 함수로 분리되어 있지 않다면 먼저 함수로 추출한다.
+4. 서브클래스 중 하나를 선택한다. 서브클래스에서 슈퍼클래스의 조건부 로직 메서드를 오버라이드한다. 조건부 문장 중 선택된 서브클래스에 해당하는 조건절을 서브클래스 메서드로 복사한 다음 적절히 수정한다.
+
+```javascript
+function plumages(birds){
+  return new Map(birds.map(b => [b.nname, plumage(b)]));
+}
+
+function speeds(birds){
+  return new Map(birds.map(b => [b.name, airSpeedVelocity(b)]));
+}
+
+function plumage(bird){ // 깃털상태
+  switch(bird.type){
+    case '유럽 제비':
+      return "보통이다";
+    case '아프리카 제비':
+      return (bird.numberOfCoconuts > 2) ? "지쳤다" : "보통이다";
+    case '노르웨이 파랑 앵무':
+      return (bird.voltage > 100) ? "그을렸다" : "예쁘다";
+    default:
+      return "알 수 없다";
+  }
+}
+
+function airSpeedVelocity(bird){ // 비행속도
+  swich(bird.type){
+    case '유럽 제비':
+      return 35;
+    case '아프리카 제비':
+      return 40 - 2 * bird.numberOfCoconuts;
+    case '노르웨이 파랑 앵무':
+      return (bird.isNailed) ? 0 : 10 + bird.voltage / 10;
+    default:
+      return null;
+  }
+}
+
+function plumage(bird){
+  return new Bird(bird).plumage;
+}
+
+function airSpeedVelocity(bird){
+  return new Bird(bird).airSpeedVelocity;
+}
+
+class Bird {
+  constructor(birdObject){
+    Object.assign(this, birdObject);
+  }
+  
+  get plumage(){
+    swich(this.type){
+      case '유럽 제비':
+        return "보통이다";
+      case '아프리카 제비':
+        return (this.numberOfCoconuts > 2) ? "지쳤다" : "보통이다";
+      case '노르웨이 파랑 앵무':
+        return (this.voltage > 100) ? "그을렸다" : "예쁘다";
+      default:
+        return "알 수 없다";
+    }
+  }
+  
+  get sirSpeedVelocity(){
+    switch(this.type){
+      case '유럽 제비':
+        return 35;
+      case '아프리카 제비':
+        return 40 -2 * this.numberOfCoconuts;
+      case '노르웨이 파랑 앵무':
+        return (this.isNailed) ? 0 : 10 + this.voltage / 10;
+      default:
+        return null;
+    }
+  } 
+}
+
+
+
+
+```
+
+
+
 ### 10.5 특이 케이스 추가하기
 Introduce Special Case
 
