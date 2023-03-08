@@ -148,6 +148,11 @@ class Salesman extends Employee {
 }
 ```
 
+<br/><br/>
+
+> 특정 서브클래스와만 관련된 필드는 슈퍼클래스에서 제거하고 해당 서브클래스에서 추가하는 것이 깔끔하다.
+
+
 ## 12.6 타입 코드를 서브클래스로 바꾸기 (Replace Type Code with Subclasses)
 
 ```javascript
@@ -165,6 +170,16 @@ function createEmployee(name, type) {
     case "manager":  return new Manager (name);
   }
 ```
+
+<br/><br/>
+
+* 비슷한 대상들을 특정 특성에 따라 구분해야 할 때 사용
+  - 예) 담당 업무 (엔지니어, 관리자, 영업자) 주문 시급성 (급함, 보통 등)
+
+> before 코드에서는 createEmployee 함수가 name과 type 매개변수를 받아서 Employee 객체를 생성하여 반환합니다.
+<br/><br/>
+하지만 after 코드에서는 createEmployee 함수가 type 매개변수를 확인하여, Engineer, Salesman, Manager 중 적절한 클래스를 선택하여 객체를 생성합니다. 이러한 변경사항은 다형성의 개념을 활용하여, Employee 클래스를 상속받은 클래스들을 일관된 방법으로 생성할 수 있도록 하였습니다. 이로 인해 새로운 직원 유형이 추가될 경우, createEmployee 함수에서 해당 유형을 추가하는 것으로 쉽게 처리할 수 있으며, 코드의 확장성과 유지보수성이 향상됩니다.
+
 
 ## 12.7 서브클래스 제거하기 (Remove Subclass)
 
@@ -187,10 +202,19 @@ class Person {
 }
 ```
 
+<br/><br/>
+
+> before 코드에서는 Person, Male, Female 클래스들이 각각 genderCode 속성을 가지고 있으며, Male 클래스는 "M", Female 클래스는 "F", Person 클래스는 "X" 값을 반환하도록 오버라이딩하고 있습니다.
+<br/><br/>
+하지만 after 코드에서는 Person 클래스가 genderCode 속성만을 가지고 있으며, 이 속성은 _genderCode로 선언되어 있습니다. 이러한 변경사항은 Person 클래스에 기본 구현을 두고, Male과 Female 클래스에서 이를 오버라이딩하는 대신에, _genderCode 속성을 각 클래스에서 선언하고, 이 값을 Person 클래스의 생성자에서 초기화함으로써, 각 클래스마다 다른 값을 가질 수 있도록 구현하고 있습니다.
+<br/><br/>
+이러한 변경사항은 Person 클래스를 더욱 일반화된 형태로 구현함으로써, 새로운 성별 유형이 추가될 경우, 쉽게 Person 클래스에서 처리할 수 있도록 하고, 코드의 확장성과 유지보수성을 향상시킵니다.
+
+
 ## 12.8 슈퍼클래스 추출하기 (Extract Superclass)
 
 ```javascript
-before
+// before
 
 class Department {
   get totalAnnualCost() {...}
@@ -203,7 +227,7 @@ class Employee {
   get name() {...}
   get id() {...}
 }
-after
+// after
 
 class Party {
   get name() {...}
@@ -221,6 +245,13 @@ class Employee extends Party {
 }
 ```
 
+<br/><br/>
+
+> before 코드에서는 Department와 Employee 클래스가 각각 고유한 속성들을 가지고 있습니다. 그러나 이러한 방식으로는 속성들이 클래스들에 중복되어 있을 가능성이 높아져, 코드의 중복성과 유지보수성이 저하될 수 있습니다.
+<br/><br/>
+따라서 after 코드에서는 공통된 속성들을 추상화하여 Party 클래스에 정의하고, Department와 Employee 클래스들은 이를 상속받아 필요한 속성들을 추가로 정의하는 방식으로 변경되었습니다. 이러한 변경사항은 코드의 중복성을 줄이고, 유지보수성을 향상시킵니다.
+
+
 ## 12.9 계층 합치기 (Collapse Hierarchy)
 
 ```javascript
@@ -233,10 +264,17 @@ class Salesman extends Employee {...}
 class Employee {...}
 ```
 
+<br/><br/>
+
+> 클래스 계층구조를 리팩터링하다 보면 기능들을 위로 올리거나 아래로 내리는 일은 다반사로 벌어진다.
+> 예컨대 계층구조도 진화하면서 어떤 클래스와 그 부모가 너무 비슷해져서 더는 독립적으로 
+> 존재해야 할 이유가 사라지는 경우가 생기기도 한다. 바로 그 둘을 하나로 합쳐야 할 시점이다.
+
+
 ## 12.10 서브클래스를 위임으로 바꾸기 (Replace Subclass with Delegate)
 
 ```javascript
-before
+// before
 
 class Order {
   get daysToShip() {
@@ -249,7 +287,7 @@ class PriorityOrder extends Order {
     return this._priorityPlan.daysToShip;
   }
 }
-after
+// after
 
 class Order {
   get daysToShip() {
@@ -265,6 +303,12 @@ class PriorityOrderDelegate {
   }
 }
 ```
+
+<br/><br/>
+
+
+> 
+
 
 ## 12.11 슈퍼클래스를 위임으로 바꾸기 (Replace Superclass with Delegate)
 
