@@ -306,8 +306,11 @@ class PriorityOrderDelegate {
 
 <br/><br/>
 
-
-> 
+> before 코드에서는 Order 클래스와 PriorityOrder 클래스가 존재합니다. PriorityOrder 클래스는 Order 클래스를 상속받아 daysToShip 속성을 오버라이딩하여 재정의합니다. 이러한 구조에서는 우선순위 주문(PriorityOrder)의 경우 daysToShip 속성을 조회할 때 상위 클래스인 Order의 daysToShip 속성이 아닌 하위 클래스인 PriorityOrder의 daysToShip 속성을 사용합니다.
+<br/><br/>
+하지만 after 코드에서는 PriorityOrder 클래스가 없어졌습니다. 대신 Order 클래스에 우선순위 주문의 daysToShip 속성을 처리하는 PriorityOrderDelegate 클래스가 추가되었습니다. Order 클래스는 daysToShip 속성을 조회할 때 PriorityOrderDelegate 객체가 존재하는 경우에는 이를 사용하고, 존재하지 않는 경우에는 이전과 같이 _warehouse 객체의 daysToShip 속성을 사용합니다.
+<br/><br/>
+이러한 변경사항은 코드의 복잡성을 줄이고 유연성을 향상시키는 효과가 있습니다. 또한 PriorityOrderDelegate 클래스를 PriorityOrder 클래스보다 더 적극적으로 재사용할 수 있게 되었습니다. 
 
 
 ## 12.11 슈퍼클래스를 위임으로 바꾸기 (Replace Superclass with Delegate)
@@ -326,6 +329,15 @@ class Stack {
 }
 class List {...}
 ```
+
+<br/><br/>
+
+> before 코드에서는 List 클래스와 Stack 클래스가 상속 관계에 있었습니다. 이것은 Stack 클래스가 List 클래스의 모든 기능과 특성을 상속하게 되는 것을 의미합니다.
+
+after 코드에서는 List 클래스와 Stack 클래스가 더 이상 상속 관계에 있지 않습니다. 대신, Stack 클래스는 List 클래스의 인스턴스를 내부적으로 사용합니다. 이것은 Stack 클래스가 List 클래스의 기능 중 필요한 것만 사용할 수 있도록 하는 것입니다.
+
+이 변경 사항은 코드 구조를 더 간단하고 유연하게 만들어줍니다. 또한, Stack 클래스는 이제 List 클래스의 구현 세부 정보에 덜 의존하게 되므로 코드 수정이 더 쉬워질 수 있습니다.
+
 
 <br/><br/>
 ### 🐈‍⬛ Reference 
