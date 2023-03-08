@@ -340,7 +340,7 @@ after 코드에서는 List 클래스와 Stack 클래스가 더 이상 상속 관
 <br/><br/>
 ### 🐈‍⬛ Reference 
 * [이재원의 티스토리](https://slog2.tistory.com/25)
-* [ChatGTP](https://chat.openai.com/)
+* [ChatGPT](https://chat.openai.com/)
 
 
 
